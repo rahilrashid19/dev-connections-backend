@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { validateSignUpApi } = require("../utils/validateApi");
 const { User } = require("../models/userModel");
+const { authMiddleware } = require("../middleware/authMiddleware");
+const validator = require("validator");
 
 const authRouter = express.Router();
 
@@ -107,6 +109,56 @@ authRouter.post("/v1/logout", async (req, res) => {
   res.status(200).json({
     message: "User logged out successfully",
   });
+});
+
+authRouter.post("/v1/resetPassword", authMiddleware, async (req, res) => {
+  try {
+    let user = req.user;
+    let { password, newPassword, confirmPassword } = req.body;
+
+    if (!password || !newPassword || !confirmPassword) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
+    let isValidPassword = await bcrypt.compare(password, user.password);
+
+    if (!isValidPassword) {
+      return res.status(400).json({
+        message: "Current password is incorrect , please verify and try again",
+      });
+    }
+
+    if (password === newPassword) {
+      return res.status(400).json({
+        message: "New password can not be same as the current password",
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        message: "New password does not match confirm password",
+      });
+    }
+
+    if (!validator.isStrongPassword(newPassword)) {
+      return res.status(400).json({
+        message: "Password must be strong",
+      });
+    }
+
+    let hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.password = hashedPassword;
+    await user.save();
+    res.status(201).json({
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.error("Reset password Error:", error);
+    res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
 });
 
 module.exports = { authRouter };
