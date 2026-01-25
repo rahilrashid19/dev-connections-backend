@@ -13,7 +13,7 @@ const userSchema = new Schema(
     },
     lastName: {
       type: String,
-      minLength: 10,
+      minLength: 2,
       maxLength: 25,
       trim: true,
     },
@@ -28,17 +28,11 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: true,
-      validate(value) {
-        if (!validator.isStrongPassword(value)) {
-          throw new Error(
-            "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
-          );
-        }
-      },
     },
     bio: {
       type: String,
       trim: true,
+      default: "Employee at Dunder Mufflin , Scrantton pennsylvania",
     },
     profilePic: {
       type: String,
@@ -78,5 +72,5 @@ const userSchema = new Schema(
   },
 );
 
-const User = mongoose.Schema("User", userSchema);
+const User = mongoose.model("User", userSchema);
 module.exports = { User };
