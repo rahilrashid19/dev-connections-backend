@@ -5,6 +5,7 @@ const { ConnectionRequestModel } = require("../models/connectionRequestModel");
 
 const requestRouter = express.Router();
 
+// send request -> like or pass
 requestRouter.post(
   "/v1/sendRequest/:toUserId/:status",
   authMiddleware,
@@ -87,6 +88,7 @@ requestRouter.post(
   },
 );
 
+// review request -> accept or rejcet
 requestRouter.post(
   "/v1/reviewRequest/:requestId/:status",
   authMiddleware,
