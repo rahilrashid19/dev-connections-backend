@@ -14,7 +14,7 @@ const connectionRequestSchema = new Schema({
     type: String,
     required: true,
     enum: {
-      values: ["accepted", "rejected", "like", "pass"],
+      values: ["accept", "reject", "like", "pass"],
       message: `{VALUE} is not a valid status`,
     },
   },

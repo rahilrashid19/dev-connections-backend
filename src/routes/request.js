@@ -87,4 +87,48 @@ requestRouter.post(
   },
 );
 
+requestRouter.post(
+  "/v1/reviewRequest/:requestId/:status",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      let requestId = req.params.requestId;
+      let loggedInUser = req.user;
+      let status = req.params.status;
+      const allowdStatus = ["accept", "reject"];
+
+      // valid status verification
+      if (!allowdStatus.includes(status)) {
+        return res.status(400).json({
+          message: "Not a valid status , please check again",
+        });
+      }
+
+      // if connection request exisits in the DB
+      let requestExists = await ConnectionRequestModel.findOne({
+        _id: requestId,
+        status: "like",
+        reciever: loggedInUser._id,
+      });
+
+      if (!requestExists) {
+        return res.status(400).json({
+          message: "Request does not exist , please check again",
+        });
+      }
+
+      requestExists.status = status;
+      await requestExists.save();
+      res.status(200).json({
+        message: `Connection request ${status}ed successfully`,
+      });
+    } catch (error) {
+      console.log(`Review request error ${error}`);
+      res.status(400).json({
+        message: "Something went wrong",
+      });
+    }
+  },
+);
+
 module.exports = { requestRouter };
