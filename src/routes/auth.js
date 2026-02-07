@@ -16,12 +16,19 @@ authRouter.post("/v1/signUp", async (req, res) => {
       lastName,
       email,
       password,
+      confirmPassword,
       bio,
       profilePic,
       age,
       gender,
       interests,
     } = req.body;
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        message: "Password and Confirm Password do not match",
+      });
+    }
+
     let hashedPassword = await bcrypt.hash(password, 12);
     let user = new User({
       firstName,

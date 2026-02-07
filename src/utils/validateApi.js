@@ -1,7 +1,7 @@
 const validator = require("validator");
 
 const validateSignUpApi = (req) => {
-  const { firstName, email, password } = req;
+  const { firstName, email, password, confirmPassword } = req;
   if (!firstName) {
     throw new Error("FirstName is required for signup");
   } else if (firstName.length < 3 || firstName.length > 15) {

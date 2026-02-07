@@ -29,6 +29,9 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    confirmPassword: {
+      type: String,
+    },
     bio: {
       type: String,
       trim: true,
